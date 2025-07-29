@@ -20,7 +20,15 @@ const API_URLS = [
   { provider: 'Playtech', folder: 'playtech' }
 ]
 
-function mapNumberToLetter(number: number | string) {
+type Game = {
+  id: string
+  name: string
+  imagePath: string
+  provider: string
+  results: any[]
+}
+
+function mapNumberToLetter(number: number | string): string {
   const num = Number(number)
   const map: Record<number, string> = {
     14: 'A',
@@ -28,12 +36,12 @@ function mapNumberToLetter(number: number | string) {
     12: 'Q',
     11: 'J'
   }
-  return map[num] || num
+  return String(map[num] || num)
 }
 
-function getColorStyle(gameName: string, result: any): { bg: string, text: string, label: string } {
+function getColorStyle(gameName: string, result: any): { bg: string; text: string; label: string } {
   const name = gameName.toLowerCase()
-  const base = { bg: 'bg-yellow-500', text: 'text-black', label: formatResult(gameName, result) }
+  const base = { bg: 'bg-yellow-500', text: 'text-black', label: String(formatResult(gameName, result)) }
 
   if (name.includes('roulette') || name.includes('roleta')) {
     const num = Number(formatResult(gameName, result))
@@ -46,7 +54,7 @@ function getColorStyle(gameName: string, result: any): { bg: string, text: strin
   }
 
   if (name.includes('football studio') || name.includes('futebol studio') || name.includes('futbol studio')) {
-    const label = mapNumberToLetter(result?.score || result?.home || result?.away || '')
+    const label = String(mapNumberToLetter(result?.score || result?.home || result?.away || ''))
     if (name.includes('ao vivo')) {
       if (result?.winner === 'away') return { bg: 'bg-blue-600', text: 'text-white', label }
       if (result?.winner === 'home') return { bg: 'bg-green-800', text: 'text-white', label }
@@ -59,7 +67,7 @@ function getColorStyle(gameName: string, result: any): { bg: string, text: strin
 
   if (name.includes('bacbo') || name.includes('bacbo ao vivo')) {
     const score = result?.banker || result?.player || result?.tie
-    const label = score
+    const label = String(score)
     if (result?.banker) return { bg: 'bg-red-600', text: 'text-white', label }
     if (result?.player) return { bg: 'bg-blue-600', text: 'text-white', label }
     if (result?.tie) return { bg: 'bg-yellow-400', text: 'text-black', label: 'EMP' }
@@ -87,8 +95,8 @@ function getColorStyle(gameName: string, result: any): { bg: string, text: strin
 function formatResult(gameName: string, result: any): string {
   if (typeof result === 'string') return result.replace(/_win$/i, '')
   if (typeof result?.result === 'string') return result.result
-  if (result?.number) return result.number
-  if (result?.winningNumber && result?.gameResult) return result.gameResult
+  if (result?.number) return String(result.number)
+  if (result?.winningNumber && result?.gameResult) return String(result.gameResult)
   if (result?.winner) return result.winner.replace(/_win$/i, '')
 
   if (result?.player || result?.banker || result?.tie) {
@@ -107,7 +115,7 @@ function formatResult(gameName: string, result: any): string {
 
 export default function Home() {
   const { user } = useAuth()
-  const [games, setGames] = useState([])
+  const [games, setGames] = useState<Game[]>([])
   const [loading, setLoading] = useState(true)
 
   const fetchData = async () => {
@@ -115,10 +123,9 @@ export default function Home() {
       const res = await fetch('/api/games')
       const json = await res.json()
       const responses = Array.isArray(json.responses) ? json.responses : []
+      const updatedGames: Game[] = []
 
-      const updatedGames = []
-
-      responses.forEach((providerData, index) => {
+      responses.forEach((providerData: any, index: number) => {
         const api = API_URLS[index]
         if (!providerData || !api) return
 
@@ -134,7 +141,7 @@ export default function Home() {
         }
 
         const results = Array.isArray(rawResults)
-          ? rawResults.slice(0, 10).map(item => Array.isArray(item) && item[0]?.number ? item[0] : item)
+          ? rawResults.slice(0, 10).map((item: any) => Array.isArray(item) && item[0]?.number ? item[0] : item)
           : []
 
         updatedGames.push({
@@ -202,7 +209,7 @@ export default function Home() {
                   <p className="text-sm text-gray-400 mb-3">{game.provider}</p>
 
                   <div className="flex flex-wrap gap-2">
-                    {game.results.map((result, index) => {
+                    {game.results.map((result: any, index: number) => {
                       const style = getColorStyle(game.name, result)
                       return (
                         <span
