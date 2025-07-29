@@ -97,13 +97,13 @@ export default function SubscriptionPlans() {
                     )}
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 items-stretch">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
                     {plans.map((plan, index) => (
                         <div
                             key={index}
-                            className={`rounded-xl overflow-hidden shadow-2xl transform transition-all duration-300 hover:scale-105 ${plan.featured ? 'border-2 border-yellow-400' : 'border border-gray-700'}`}
+                            className={`flex flex-col h-full rounded-xl overflow-hidden shadow-2xl transform transition-all duration-300 hover:scale-105 ${plan.featured ? 'border-2 border-yellow-400' : 'border border-gray-700'}`}
                         >
-                            {/* Seção da Imagem */}
+                            {/* Seção da Imagem (altura fixa) */}
                             <div className="relative h-40 bg-gray-800 flex items-center justify-center">
                                 <Image
                                     src={plan.image}
@@ -119,16 +119,16 @@ export default function SubscriptionPlans() {
                                 />
                             </div>
 
-                            {/* Seção do Título e Preço */}
-                            <div className={`${plan.color} p-6 text-center`}>
+                            {/* Seção do Título e Preço (altura fixa) */}
+                            <div className={`${plan.color} p-6 text-center min-h-[120px] flex flex-col justify-center`}>
                                 <h2 className="text-2xl font-bold">{plan.name}</h2>
                                 <p className="text-xl font-semibold mt-2">{plan.price}</p>
                             </div>
 
-                            {/* Seção de Conteúdo */}
-                            <div className="bg-gray-800 p-6">
+                            {/* Seção de Conteúdo (preenche o espaço restante) */}
+                            <div className="bg-gray-800 p-6 flex-grow flex flex-col">
                                 <p className="text-gray-300 mb-6">{plan.description}</p>
-                                <ul className="space-y-3">
+                                <ul className="space-y-3 flex-grow">
                                     {plan.features.map((feature, idx) => (
                                         <li key={idx} className="flex items-start">
                                             <svg className="w-5 h-5 text-yellow-400 mr-2 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
