@@ -25,9 +25,9 @@ export default function Header() {
                 <Image
                     src="/assets/cassino-track-logo.png"
                     alt="CassinoTrack Logo"
-                    width={40}
-                    height={40}
-                    className="h-10 w-auto"
+                    width={160}
+                    height={160}
+                    className="h-15 w-auto"
                 />
                 <span className="text-2xl font-bold tracking-widest hover:text-white transition hidden sm:block">
                     CassinoTrack
