@@ -7,106 +7,99 @@ import Footer from '@/components/Footer'
 import { useAuth } from '@/components/AuthProvider'
 import Image from 'next/image'
 
-type Game = {
-  id: string
-  name: string
-  results: any[]
-  imagePath: string
-  provider: string
-}
-
 const API_URLS = [
-  {
-    provider: 'Evolution',
-    folder: 'evolution'
-  },
-  {
-    provider: 'Evolution',
-    folder: 'evolution/games'
-  },
-  {
-    provider: 'Evolution',
-    folder: 'evolution/games'
-  },
-  {
-    provider: 'Evolution',
-    folder: 'evolution/games'
-  },
-  {
-    provider: 'Evolution',
-    folder: 'evolution/games'
-  },
-  {
-    provider: 'Evolution',
-    folder: 'evolution/games'
-  },
-  {
-    provider: 'Pragmatic',
-    folder: 'pragmatic/roulette'
-  },
-  {
-    provider: 'Pragmatic',
-    folder: 'pragmatic/cards'
-  },
-  {
-    provider: 'Pragmatic',
-    folder: 'pragmatic/spaceman'
-  },
-  {
-    provider: 'Playtech',
-    folder: 'playtech'
-  }
+  { provider: 'Evolution', folder: 'evolution' },
+  { provider: 'Evolution', folder: 'evolution/games' },
+  { provider: 'Evolution', folder: 'evolution/games' },
+  { provider: 'Evolution', folder: 'evolution/games' },
+  { provider: 'Evolution', folder: 'evolution/games' },
+  { provider: 'Evolution', folder: 'evolution/games' },
+  { provider: 'Pragmatic', folder: 'pragmatic/roulette' },
+  { provider: 'Pragmatic', folder: 'pragmatic/cards' },
+  { provider: 'Pragmatic', folder: 'pragmatic/spaceman' },
+  { provider: 'Playtech', folder: 'playtech' }
 ]
 
-const generateImagePath = (providerFolder: string, gameName: string): string => {
-  const formattedName = gameName
-    .toLowerCase()
-    .replace(/\s+/g, '-')
-    .replace(/[^a-z0-9-]/g, '')
-    .replace(/_/g, '-')
-    .replace(/_win$/, '')
+function mapNumberToLetter(number: number | string) {
+  const num = Number(number)
+  const map: Record<number, string> = {
+    14: 'A',
+    13: 'K',
+    12: 'Q',
+    11: 'J'
+  }
+  return map[num] || num
+}
 
-  return `/assets/${providerFolder}/${formattedName}.png`
+function getColorStyle(gameName: string, result: any): { bg: string, text: string, label: string } {
+  const name = gameName.toLowerCase()
+  const base = { bg: 'bg-yellow-500', text: 'text-black', label: formatResult(gameName, result) }
+
+  if (name.includes('roulette') || name.includes('roleta')) {
+    const num = Number(formatResult(gameName, result))
+    const red = [1, 3, 5, 7, 9, 12, 14, 16, 18, 19, 21, 23, 25, 27, 30, 32, 34, 36]
+    const black = [2, 4, 6, 8, 10, 11, 13, 15, 17, 20, 22, 24, 26, 28, 29, 31, 33, 35]
+
+    if (num === 0) return { bg: 'bg-green-600', text: 'text-white', label: '0' }
+    if (red.includes(num)) return { bg: 'bg-red-600', text: 'text-white', label: String(num) }
+    if (black.includes(num)) return { bg: 'bg-black', text: 'text-white', label: String(num) }
+  }
+
+  if (name.includes('football studio') || name.includes('futebol studio') || name.includes('futbol studio')) {
+    const label = mapNumberToLetter(result?.score || result?.home || result?.away || '')
+    if (name.includes('ao vivo')) {
+      if (result?.winner === 'away') return { bg: 'bg-blue-600', text: 'text-white', label }
+      if (result?.winner === 'home') return { bg: 'bg-green-800', text: 'text-white', label }
+    } else {
+      if (result?.winner === 'away') return { bg: 'bg-blue-500', text: 'text-white', label }
+      if (result?.winner === 'home') return { bg: 'bg-yellow-500', text: 'text-black', label }
+    }
+    if (result?.winner === 'tie') return { bg: 'bg-yellow-300', text: 'text-black', label: 'EMP' }
+  }
+
+  if (name.includes('bacbo') || name.includes('bacbo ao vivo')) {
+    const score = result?.banker || result?.player || result?.tie
+    const label = score
+    if (result?.banker) return { bg: 'bg-red-600', text: 'text-white', label }
+    if (result?.player) return { bg: 'bg-blue-600', text: 'text-white', label }
+    if (result?.tie) return { bg: 'bg-yellow-400', text: 'text-black', label: 'EMP' }
+  }
+
+  if (name.includes('baccarat')) {
+    if (result?.banker) return { bg: 'bg-blue-600', text: 'text-white', label: 'B' }
+    if (result?.player) return { bg: 'bg-blue-500', text: 'text-white', label: 'P' }
+    if (result?.tie) return { bg: 'bg-green-500', text: 'text-white', label: 'T' }
+  }
+
+  if (name.includes('spaceman')) {
+    const val = parseFloat(formatResult(gameName, result))
+    const label = `${val.toFixed(2)}x`
+    if (val <= 1.0) return { bg: 'bg-[#5E6A71]', text: 'text-white', label }
+    if (val > 1.0 && val < 2.0) return { bg: 'bg-[#007cc3]', text: 'text-white', label }
+    if (val >= 2.0 && val < 6.0) return { bg: 'bg-[#4201CB]', text: 'text-white', label }
+    if (val >= 6.0 && val < 15.0) return { bg: 'bg-[#59009e]', text: 'text-white', label }
+    if (val >= 15.0) return { bg: 'bg-[#9D01C8]', text: 'text-white', label }
+  }
+
+  return base
 }
 
 function formatResult(gameName: string, result: any): string {
-  if (typeof result === 'string') {
-    return result.replace(/_win$/i, '')
-  }
-
-  if (typeof result?.result === 'string') {
-    return result.result
-  }
-
-  if (result?.number) {
-    return result.number
-  }
-
-  if (result?.winningNumber && result?.gameResult) {
-    return result.gameResult
-  }
-
-  if (result?.winner) {
-    return result.winner.replace(/_win$/i, '')
-  }
+  if (typeof result === 'string') return result.replace(/_win$/i, '')
+  if (typeof result?.result === 'string') return result.result
+  if (result?.number) return result.number
+  if (result?.winningNumber && result?.gameResult) return result.gameResult
+  if (result?.winner) return result.winner.replace(/_win$/i, '')
 
   if (result?.player || result?.banker || result?.tie) {
     const player = result.player ? result.player.replace(/_win$/i, '') : ''
     const banker = result.banker ? result.banker.replace(/_win$/i, '') : ''
     const tie = result.tie ? result.tie.replace(/_win$/i, '') : ''
-
-    return [
-      player ? `P:${player}` : '',
-      banker ? `B:${banker}` : '',
-      tie ? `T:${tie}` : ''
-    ].filter(Boolean).join(' ')
+    return [player && `P:${player}`, banker && `B:${banker}`, tie && `T:${tie}`].filter(Boolean).join(' ')
   }
 
   if (result?.home || result?.away) {
-    return [
-      result.home ? `H:${result.home}` : '',
-      result.away ? `A:${result.away}` : ''
-    ].filter(Boolean).join(' ')
+    return [result.home && `H:${result.home}`, result.away && `A:${result.away}`].filter(Boolean).join(' ')
   }
 
   return JSON.stringify(result)
@@ -114,7 +107,7 @@ function formatResult(gameName: string, result: any): string {
 
 export default function Home() {
   const { user } = useAuth()
-  const [games, setGames] = useState<Game[]>([])
+  const [games, setGames] = useState([])
   const [loading, setLoading] = useState(true)
 
   const fetchData = async () => {
@@ -123,15 +116,14 @@ export default function Home() {
       const json = await res.json()
       const responses = Array.isArray(json.responses) ? json.responses : []
 
-      const updatedGames: Game[] = []
+      const updatedGames = []
 
-      responses.forEach((providerData: any, index: number) => {
+      responses.forEach((providerData, index) => {
         const api = API_URLS[index]
         if (!providerData || !api) return
 
         const gameKeys = Object.keys(providerData)
-        if (gameKeys.length === 0) return
-
+        if (!gameKeys.length) return
 
         const firstGameKey = gameKeys[0]
         const gameName = firstGameKey.replace(/_/g, ' ')
@@ -142,24 +134,21 @@ export default function Home() {
         }
 
         const results = Array.isArray(rawResults)
-          ? rawResults.slice(0, 10).map((item: any) => {
-            if (Array.isArray(item) && item[0]?.number) return item[0]
-            return item
-          })
+          ? rawResults.slice(0, 10).map(item => Array.isArray(item) && item[0]?.number ? item[0] : item)
           : []
 
         updatedGames.push({
           id: `${api.provider}_${firstGameKey}`,
           name: gameName,
           results,
-          imagePath: generateImagePath(api.folder, gameName),
+          imagePath: `/assets/${api.folder}/${gameName.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '')}.png`,
           provider: api.provider
         })
       })
 
       setGames(updatedGames)
-    } catch (error) {
-      console.error('Erro ao buscar dados:', error)
+    } catch (e) {
+      console.error(e)
     } finally {
       setLoading(false)
     }
@@ -174,7 +163,6 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-gray-900 text-white">
       <Header />
-
       <main className="container mx-auto px-4 py-8">
         <h1 className="text-3xl font-bold mb-6 text-yellow-400">Últimos Resultados</h1>
 
@@ -193,10 +181,7 @@ export default function Home() {
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {games.map((game) => (
-              <div
-                key={game.id}
-                className="bg-gray-800 rounded-xl overflow-hidden shadow-lg"
-              >
+              <div key={game.id} className="bg-gray-800 rounded-xl overflow-hidden shadow-lg">
                 <div className="h-48 bg-gray-700 flex items-center justify-center relative">
                   <Image
                     src={game.imagePath}
@@ -205,28 +190,29 @@ export default function Home() {
                     height={200}
                     className="object-contain"
                     onError={(e) => {
-
                       const parent = (e.target as HTMLElement).parentElement
                       if (parent) {
-                        parent.innerHTML = `<span class="text-gray-400">${game.name}</span>`
+                        parent.innerHTML = `<span class='text-gray-400'>${game.name}</span>`
                       }
                     }}
                   />
                 </div>
-
                 <div className="p-4">
                   <h3 className="text-lg font-bold truncate">{game.name}</h3>
                   <p className="text-sm text-gray-400 mb-3">{game.provider}</p>
 
                   <div className="flex flex-wrap gap-2">
-                    {game.results.map((result, index) => (
-                      <span
-                        key={index}
-                        className="bg-yellow-500 text-black px-2 py-1 rounded text-xs font-bold"
-                      >
-                        {formatResult(game.name, result)}
-                      </span>
-                    ))}
+                    {game.results.map((result, index) => {
+                      const style = getColorStyle(game.name, result)
+                      return (
+                        <span
+                          key={index}
+                          className={`px-2 py-1 rounded text-xs font-bold ${style.bg} ${style.text}`}
+                        >
+                          {style.label}
+                        </span>
+                      )
+                    })}
                   </div>
                 </div>
               </div>
@@ -234,7 +220,6 @@ export default function Home() {
           </div>
         )}
       </main>
-
       <Footer />
     </div>
   )
