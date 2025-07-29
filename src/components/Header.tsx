@@ -7,6 +7,7 @@ import { signOut } from 'firebase/auth'
 import { auth } from '@/lib/firebase'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
+import Image from 'next/image'
 
 export default function Header() {
     const { user } = useAuth()
@@ -20,8 +21,17 @@ export default function Header() {
 
     return (
         <header className="bg-black text-[#FFD700] flex justify-between items-center px-6 py-4 border-b border-[#FFD700]/10">
-            <Link href="/" className="text-2xl font-bold tracking-widest hover:text-white transition">
-                CassinoTrack
+            <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition">
+                <Image
+                    src="/assets/cassino-track-logo.png"
+                    alt="CassinoTrack Logo"
+                    width={40}
+                    height={40}
+                    className="h-10 w-auto"
+                />
+                <span className="text-2xl font-bold tracking-widest hover:text-white transition hidden sm:block">
+                    CassinoTrack
+                </span>
             </Link>
 
             {user ? (
@@ -50,6 +60,24 @@ export default function Header() {
                             >
                                 Planos
                             </Link>
+                            <Link
+                                href="https://instagram.com/seu_perfil"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="block px-4 py-2 hover:bg-[#2a2a2a]"
+                                onClick={() => setOpen(false)}
+                            >
+                                Instagram
+                            </Link>
+                            <Link
+                                href="https://t.me/seu_canal"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="block px-4 py-2 hover:bg-[#2a2a2a]"
+                                onClick={() => setOpen(false)}
+                            >
+                                Telegram
+                            </Link>
                             <button
                                 onClick={handleLogout}
                                 className="w-full text-left px-4 py-2 hover:bg-[#2a2a2a] text-red-400"
@@ -61,12 +89,20 @@ export default function Header() {
                     )}
                 </div>
             ) : (
-                <Link
-                    href="/login"
-                    className="bg-[#C00000] text-white font-bold px-4 py-2 rounded-xl hover:bg-[#FFD700] hover:text-black transition"
-                >
-                    Login
-                </Link>
+                <div className="flex gap-4">
+                    <Link
+                        href="/planos"
+                        className="text-yellow-400 hover:text-white transition"
+                    >
+                        Planos
+                    </Link>
+                    <Link
+                        href="/login"
+                        className="bg-[#C00000] text-white font-bold px-4 py-2 rounded-xl hover:bg-[#FFD700] hover:text-black transition"
+                    >
+                        Login
+                    </Link>
+                </div>
             )}
         </header>
     )
