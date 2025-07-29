@@ -54,7 +54,7 @@ export default function Header() {
                                 Perfil
                             </Link>
                             <Link
-                                href="/planos"
+                                href="/plans"
                                 className="block px-4 py-2 hover:bg-[#2a2a2a]"
                                 onClick={() => setOpen(false)}
                             >
@@ -91,7 +91,7 @@ export default function Header() {
             ) : (
                 <div className="flex gap-4">
                     <Link
-                        href="/planos"
+                        href="/plans"
                         className="text-yellow-400 hover:text-white transition"
                     >
                         Planos
