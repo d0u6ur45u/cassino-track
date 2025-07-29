@@ -1,5 +1,6 @@
 import '../styles/globals.css'
 import { Orbitron } from 'next/font/google'
+import { AuthProvider } from '@/components/AuthProvider'
 
 const orbitron = Orbitron({
   subsets: ['latin'],
@@ -13,9 +14,11 @@ export const metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="pt-BR">
-      <body className={`${orbitron.variable} antialiased`}>
-        {children}
+    <html lang="pt-BR" suppressHydrationWarning>
+      <body className={`${orbitron.variable} antialiased`} suppressHydrationWarning>
+        <AuthProvider>
+          {children}
+        </AuthProvider>
       </body>
     </html>
   )
