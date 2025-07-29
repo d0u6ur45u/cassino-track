@@ -19,7 +19,7 @@ export default function SubscriptionPlans() {
                 'Acesso a resultados básicos',
                 'Atualizações em tempo real',
                 '5 jogos populares disponíveis',
-                'Suporte por e-mail',
+                'Suporte por telegram',
                 'Anúncios no site'
             ],
             featured: false,
@@ -54,7 +54,7 @@ export default function SubscriptionPlans() {
                 'Alertas personalizados',
                 'Estatísticas avançadas e históricos',
                 'Análises diárias de padrões',
-                'Suporte 24/7 via telegram',
+                'Suporte 24h via whatsapp e telegram',
                 'Webinars mensais exclusivos'
             ],
             featured: true,
