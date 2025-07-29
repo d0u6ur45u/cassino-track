@@ -1,0 +1,22 @@
+@import "tailwindcss";
+
+:root {
+  --color-bg: #000000;
+  --color-fg: #ededed;
+  --color-vermelho: #C00000;
+  --color-dourado: #FFD700;
+  --font-principal: 'Orbitron', sans-serif;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-bg: #000000;
+    --color-fg: #ededed;
+  }
+}
+
+body {
+  background-color: var(--color-bg);
+  color: var(--color-fg);
+  font-family: var(--font-principal);
+}
