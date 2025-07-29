@@ -27,7 +27,7 @@ export default function Header({ showAuth = true }: HeaderProps) {
                     alt="CassinoTrack Logo"
                     width={160}
                     height={160}
-                    className="h-20 w-auto"
+                    className="h-10 w-auto"
                 />
                 <span className="text-2xl font-bold tracking-widest hover:text-white transition hidden sm:block">
                     CassinoTrack
