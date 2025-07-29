@@ -101,19 +101,29 @@ function getColorStyle(gameName: string, result: any): { bg: string; text: strin
     if (winner === 'tie') return { bg: 'bg-yellow-400', text: 'text-black', label, rounded };
   }
 
-  if (name.includes('baccarat') || name.includes('bacar')) {
+  if (name.toLowerCase().includes('bacará') || name.toLowerCase().includes('baccarat')) {
     const rounded = 'rounded-full w-6 h-6 flex items-center justify-center text-xs';
     const winner = result?.winner?.toLowerCase();
 
-    if (winner === 'banker_win' || result?.banker) {
+    console.log('Processing Bacará:', { name, result, winner });
+
+    if (winner?.includes('banker')) {
       return { bg: 'bg-blue-600', text: 'text-white', label: 'B', rounded };
     }
-    if (winner === 'player_win' || result?.player) {
+    if (winner?.includes('player')) {
       return { bg: 'bg-red-600', text: 'text-white', label: 'P', rounded };
     }
-    if (winner === 'tie' || result?.tie) {
+    if (winner?.includes('tie')) {
       return { bg: 'bg-green-500', text: 'text-white', label: 'T', rounded };
     }
+
+    if (result?.player !== undefined && result?.banker !== undefined) {
+      if (result.player > result.banker) return { bg: 'bg-red-600', text: 'text-white', label: 'P', rounded };
+      if (result.banker > result.player) return { bg: 'bg-blue-600', text: 'text-white', label: 'B', rounded };
+      if (result.player === result.banker) return { bg: 'bg-green-500', text: 'text-white', label: 'T', rounded };
+    }
+
+    return { bg: 'bg-gray-500', text: 'text-white', label: '?', rounded };
   }
 
   if (name.includes('spaceman')) {
