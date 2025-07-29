@@ -1,28 +1,22 @@
-import type { Metadata } from "next";
-import { Orbitron } from "next/font/google";
-import "../styles/globals.css";
+import '../styles/globals.css'
+import { Orbitron } from 'next/font/google'
 
 const orbitron = Orbitron({
-  subsets: ["latin"],
-  weight: ["400", "600", "700"],
-  variable: "--font-principal",
-});
+  subsets: ['latin'],
+  variable: '--font-principal',
+})
 
-export const metadata: Metadata = {
-  title: "CassinoTrack",
-  description: "Dados de jogos em tempo real",
-};
+export const metadata = {
+  title: 'CassinoTrack',
+  description: 'Dados de jogos em tempo real',
+}
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="pt-BR">
       <body className={`${orbitron.variable} antialiased`}>
         {children}
       </body>
     </html>
-  );
+  )
 }
