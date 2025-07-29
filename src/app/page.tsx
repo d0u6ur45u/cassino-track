@@ -39,7 +39,7 @@ function mapNumberToLetter(number: number | string): string {
   return String(map[num] || num)
 }
 
-function getColorStyle(gameName: string, result: any): { bg: string; text: string; label: string } {
+function getColorStyle(gameName: string, result: any): { bg: string; text: string; label: string; rounded?: string } {
   const name = gameName.toLowerCase()
   const base = { bg: 'bg-yellow-500', text: 'text-black', label: String(formatResult(gameName, result)) }
 
@@ -54,29 +54,66 @@ function getColorStyle(gameName: string, result: any): { bg: string; text: strin
   }
 
   if (name.includes('football studio') || name.includes('futebol studio') || name.includes('futbol studio')) {
-    const label = String(mapNumberToLetter(result?.score || result?.home || result?.away || ''))
-    if (name.includes('ao vivo')) {
-      if (result?.winner === 'away') return { bg: 'bg-blue-600', text: 'text-white', label }
-      if (result?.winner === 'home') return { bg: 'bg-green-800', text: 'text-white', label }
-    } else {
-      if (result?.winner === 'away') return { bg: 'bg-blue-500', text: 'text-white', label }
-      if (result?.winner === 'home') return { bg: 'bg-yellow-500', text: 'text-black', label }
+    let label = ''
+    let bg = ''
+    let text = 'text-white'
+    const rounded = 'rounded-full w-6 h-6 flex items-center justify-center text-xs'
+
+    const winner = result?.winner?.toLowerCase()
+    const score =
+      winner === 'tie'
+        ? result?.home?.score || result?.away?.score || ''
+        : result?.[winner]?.score || ''
+
+    label = winner === 'tie' ? mapNumberToLetter(score) : mapNumberToLetter(score)
+
+    if (winner === 'tie' && name.includes('futbol studio')) {
+      return { bg: 'bg-gray-500', text: 'text-white', label, rounded }
     }
-    if (result?.winner === 'tie') return { bg: 'bg-yellow-300', text: 'text-black', label: 'EMP' }
+    if (winner === 'tie') {
+      return { bg: 'bg-yellow-400', text: 'text-black', label, rounded }
+    }
+
+    if (name.includes('futbol studio')) {
+      if (winner === 'away') bg = 'bg-blue-600'
+      if (winner === 'home') bg = 'bg-yellow-500'
+    } else if (name.includes('futebol studio ao vivo')) {
+      if (winner === 'away') bg = 'bg-blue-600'
+      if (winner === 'home') bg = 'bg-green-800'
+    } else if (name.includes('football studio')) {
+      if (winner === 'away') bg = 'bg-blue-600'
+      if (winner === 'home') bg = 'bg-red-600'
+    }
+
+    return { bg, text, label, rounded }
   }
 
-  if (name.includes('bacbo') || name.includes('bacbo ao vivo')) {
-    const score = result?.banker || result?.player || result?.tie
-    const label = String(score)
-    if (result?.banker) return { bg: 'bg-red-600', text: 'text-white', label }
-    if (result?.player) return { bg: 'bg-blue-600', text: 'text-white', label }
-    if (result?.tie) return { bg: 'bg-yellow-400', text: 'text-black', label: 'EMP' }
+  if (name.includes('bac bo') || name.includes('bac bo ao vivo')) {
+    const winner = result?.winner?.toLowerCase();
+    const score = result?.Score;
+    if (!winner || score === undefined) return base;
+
+    const label = winner === 'tie' ? mapNumberToLetter(score) : String(score);
+    const rounded = 'rounded-full w-6 h-6 flex items-center justify-center text-xs';
+
+    if (winner === 'banker') return { bg: 'bg-red-600', text: 'text-white', label, rounded };
+    if (winner === 'player') return { bg: 'bg-blue-600', text: 'text-white', label, rounded };
+    if (winner === 'tie') return { bg: 'bg-yellow-400', text: 'text-black', label, rounded };
   }
 
-  if (name.includes('baccarat')) {
-    if (result?.banker) return { bg: 'bg-blue-600', text: 'text-white', label: 'B' }
-    if (result?.player) return { bg: 'bg-blue-500', text: 'text-white', label: 'P' }
-    if (result?.tie) return { bg: 'bg-green-500', text: 'text-white', label: 'T' }
+  if (name.includes('baccarat') || name.includes('bacar')) {
+    const rounded = 'rounded-full w-6 h-6 flex items-center justify-center text-xs';
+    const winner = result?.winner?.toLowerCase();
+
+    if (winner === 'banker_win' || result?.banker) {
+      return { bg: 'bg-blue-600', text: 'text-white', label: 'B', rounded };
+    }
+    if (winner === 'player_win' || result?.player) {
+      return { bg: 'bg-red-600', text: 'text-white', label: 'P', rounded };
+    }
+    if (winner === 'tie' || result?.tie) {
+      return { bg: 'bg-green-500', text: 'text-white', label: 'T', rounded };
+    }
   }
 
   if (name.includes('spaceman')) {
@@ -85,8 +122,8 @@ function getColorStyle(gameName: string, result: any): { bg: string; text: strin
     if (val <= 1.0) return { bg: 'bg-[#5E6A71]', text: 'text-white', label }
     if (val > 1.0 && val < 2.0) return { bg: 'bg-[#007cc3]', text: 'text-white', label }
     if (val >= 2.0 && val < 6.0) return { bg: 'bg-[#4201CB]', text: 'text-white', label }
-    if (val >= 6.0 && val < 15.0) return { bg: 'bg-[#59009e]', text: 'text-white', label }
-    if (val >= 15.0) return { bg: 'bg-[#9D01C8]', text: 'text-white', label }
+    if (val >= 6.0 && val < 20.0) return { bg: 'bg-[#59009e]', text: 'text-white', label }
+    if (val >= 20.0) return { bg: 'bg-[#9D01C8]', text: 'text-white', label }
   }
 
   return base
@@ -177,7 +214,7 @@ export default function Home() {
           <div className="bg-yellow-500 text-black p-3 rounded-lg mb-6">
             <Link href="/login" className="font-semibold underline">
               Faça login
-            </Link> para ver o histórico completo.
+            </Link> para mais jogos.
           </div>
         )}
 
@@ -214,7 +251,7 @@ export default function Home() {
                       return (
                         <span
                           key={index}
-                          className={`px-2 py-1 rounded text-xs font-bold ${style.bg} ${style.text}`}
+                          className={`px-2 py-1 text-xs font-bold ${style.bg} ${style.text} ${style.rounded || 'rounded'}`}
                         >
                           {style.label}
                         </span>
