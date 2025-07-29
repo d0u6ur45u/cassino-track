@@ -224,7 +224,7 @@ export default function Home() {
           <div className="bg-yellow-500 text-black p-3 rounded-lg mb-6">
             <Link href="/login" className="font-semibold underline">
               Faça login
-            </Link> para mais jogos.
+            </Link> para acessar mais jogos.
           </div>
         )}
 
